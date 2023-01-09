@@ -27,6 +27,8 @@ const fetchRecur = async (
 
   const records = [...allRecords, ...formattedRecords];
 
+  console.log(`Fetched ${records.length} records`);
+
   if (items === records.length) {
     return records;
   }
