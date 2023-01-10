@@ -14,7 +14,7 @@ const fetchRecur = async (
   const formattedRecords: Record[] = releases.map((
     {
       date_added,
-      basic_information: { title, year, cover_image, artists, genres },
+      basic_information: { title, year, cover_image, artists, genres, styles },
     },
   ): Record => ({
     title,
@@ -22,7 +22,8 @@ const fetchRecur = async (
     coverImage: cover_image,
     year,
     artists: artists.map(({ name }) => name),
-    genres,
+    genres: genres.sort((a, b) => a.localeCompare(b)),
+    styles: styles.sort((a, b) => a.localeCompare(b)),
   }));
 
   const records = [...allRecords, ...formattedRecords];

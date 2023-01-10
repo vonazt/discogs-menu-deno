@@ -8,6 +8,7 @@ export interface Release {
       name: string;
     }[];
     genres: string[];
+    styles: string[];
   };
 }
 
@@ -26,4 +27,5 @@ export interface Record {
   year: number;
   artists: string[];
   genres: string[];
+  styles: string[];
 }
