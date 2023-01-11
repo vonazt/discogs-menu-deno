@@ -15,34 +15,11 @@ export const handler: Handlers<Record[]> = {
       [],
     );
 
-    const { recordsWithStyles, recordsWithoutStyles } = allRecords!.reduce(
-      (
-        acc,
-        record,
-      ) =>
-        record.styles.length > 0
-          ? {
-            ...acc,
-            recordsWithStyles: [...acc.recordsWithStyles, record],
-          }
-          : {
-            ...acc,
-            recordsWithoutStyles: [...acc.recordsWithoutStyles, record],
-          },
-      { recordsWithStyles: [], recordsWithoutStyles: [] } as {
-        recordsWithStyles: Record[];
-        recordsWithoutStyles: Record[];
-      },
-    );
-
-    const records = [
-      ...recordsWithStyles.sort((a, b) =>
-        a.styles[0].localeCompare(b.styles[0])
-      ),
-      ...recordsWithoutStyles.sort((a, b) =>
-        a.genres[0].localeCompare(b.genres[0])
-      ),
-    ].map((record) => ({
+    const records = allRecords!.sort((a, b) =>
+      a.genres[0].localeCompare(b.genres[0])
+    ).map((
+      record,
+    ) => ({
       ...record,
       artists: record.artists.map((artist) =>
         artist.replace(new RegExp(/\(\d+\)/), "")
@@ -76,12 +53,11 @@ export default function Home({ data }: PageProps<Record[]>) {
                   <p class="text-xs  w-full">
                     <strong>Artist:</strong> {artists.join(", ")}
                   </p>
-
                   <p class="text-xs  w-full">
-                    <strong>Year of release:</strong> {year}
+                    <strong>Genres:</strong> {genres.join(", ")}
                   </p>
                   <p class="text-xs  w-full">
-                    <strong>Genres:</strong>{" "}
+                    <strong>Styles:</strong>{" "}
                     {styles.length ? styles.join(", ") : genres.join(", ")}
                   </p>
                   <p class="text-xs  w-full">
