@@ -5,19 +5,23 @@ import { Record } from "./types/index.ts";
 import { load } from "https://deno.land/std@0.171.0/dotenv/mod.ts";
 import dateformat from "dateformat";
 
-export const handler: Handlers<Record[]> = {
+export const handler: Handlers<{ collection: Record[]; appendix: Record[] }> = {
   async GET(_, ctx) {
     const configData = await load();
     const discogsToken = configData["DISCOGS_TOKEN"];
 
     const allRecords = await fetchRecur(
-      `https://api.discogs.com//users/vonazt/collection/folders/0/releases?sort=artist&sort_order=asc&token=${discogsToken}`,
+      `https://api.discogs.com//users/vonazt/collection/folders/0/releases?sort=added&sort_order=desc&token=${discogsToken}`,
       [],
     );
 
-    const records = allRecords!.sort((a, b) =>
-      a.genres[0].localeCompare(b.genres[0])
-    ).map((
+    const records = allRecords!.reduce(
+      (records, record) =>
+        records.some(({ title }) => title === record.title)
+          ? records
+          : [...records, record],
+      [] as Record[],
+    ).sort((a, b) => a.genres[0].localeCompare(b.genres[0])).map((
       record,
     ) => ({
       ...record,
@@ -25,11 +29,21 @@ export const handler: Handlers<Record[]> = {
         artist.replace(new RegExp(/\(\d+\)/), "")
       ),
     }));
-    return ctx.render(records);
+
+    const appendix = records.filter(({ dateAdded }) =>
+      new Date(dateAdded).getTime() > new Date("2023-01-10").getTime()
+    );
+    const collection = records.filter(({ dateAdded }) =>
+      new Date(dateAdded).getTime() < new Date("2023-01-10").getTime()
+    );
+
+    return ctx.render({ collection, appendix });
   },
 };
 
-export default function Home({ data }: PageProps<Record[]>) {
+export default function Home(
+  { data }: PageProps<{ collection: Record[]; appendix: Record[] }>,
+) {
   return (
     (
       <>
@@ -38,8 +52,9 @@ export default function Home({ data }: PageProps<Record[]>) {
         </Head>
         <div class="p-4 mx-auto max-w-screen-md">
           <div class="grid grid-cols-3 gap-3">
-            {data.map((
-              { title, dateAdded, coverImage, year, artists, genres, styles },
+            <h1 class="col-span-3 text-xl text-center">APPENDIX</h1>
+            {data.appendix.map((
+              { title, dateAdded, coverImage, artists, genres, styles },
             ) => (
               <div class="border-2 my-1 shadow-2xl flex flex-wrap col-span-1 justify-center flex-auto">
                 <img

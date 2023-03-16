@@ -30,11 +30,11 @@ const fetchRecur = async (
 
   console.log(`Fetched ${records.length} records`);
 
-  if (items === records.length) {
-    return records;
-  }
+  // if (items === records.length) {
+  return records;
+  // }
 
-  return fetchRecur(urls.next, records);
+  // return fetchRecur(urls.next, records);
 };
 
 export default fetchRecur;
