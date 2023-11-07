@@ -15,9 +15,13 @@ export const handler: Handlers<Record[]> = {
       [],
     );
 
-    const records = allRecords!.sort((a, b) =>
-      a.genres[0].localeCompare(b.genres[0])
-    ).map((
+    const records = allRecords!.reduce(
+      (records, record) =>
+        records.some(({ title }) => title === record.title)
+          ? records
+          : [...records, record],
+      [] as Record[],
+    ).sort((a, b) => a.genres[0].localeCompare(b.genres[0])).map((
       record,
     ) => ({
       ...record,
