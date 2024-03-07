@@ -28,7 +28,7 @@ export const handler: Handlers<Record[]> = {
       artists: record.artists.map((artist) =>
         artist.replace(new RegExp(/\(\d+\)/), "")
       ),
-    }));
+    })).filter(({dateAdded}) => new Date(dateAdded).getTime() >= new Date('2023-12-08').getTime()).sort((a, b) => new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime());
     return ctx.render(records);
   },
 };
@@ -40,14 +40,15 @@ export default function Home({ data }: PageProps<Record[]>) {
         <Head>
           <title>Discogs menu</title>
         </Head>
+        <h1 class="flex justify-center text-xl font-bold">Appendix</h1>
         <div class="p-4 mx-auto max-w-screen-md">
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-4 gap-4">
             {data.map((
               { title, dateAdded, coverImage, year, artists, genres, styles },
             ) => (
               <div class="border-2 my-1 shadow-2xl flex flex-wrap col-span-1 justify-center flex-auto">
                 <img
-                  class="pt-1 w-32 h-32 object-fill"
+                  class="pt-1"
                   src={coverImage}
                 />
                 <div class="p-2 text-center">
